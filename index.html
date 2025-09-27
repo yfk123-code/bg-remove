@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Background Remover Tool</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-cut"></i> Remove Image Background</h1>
+        <p>Upload any image to remove its background instantly — powered by AI.</p>
+
+        <div class="upload-area" id="dropArea">
+            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+            <p>Drag & Drop your image here or <span class="browse">Browse</span></p>
+            <input type="file" id="imageInput" accept="image/*" hidden />
+        </div>
+
+        <div class="preview-section" id="previewSection" style="display: none;">
+            <h3>Preview</h3>
+            <div class="image-container">
+                <img id="previewImage" src="" alt="Preview" />
+            </div>
+            <button id="downloadBtn" class="btn-download"><i class="fas fa-download"></i> Download Image</button>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Removing background... Please wait</p>
+        </div>
+
+        <footer>
+            <p>Made with ❤️ using <a href="https://www.remove.bg/" target="_blank">Remove.bg API</a></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

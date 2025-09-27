@@ -5,10 +5,6 @@ const previewImage = document.getElementById('previewImage');
 const downloadBtn = document.getElementById('downloadBtn');
 const loading = document.getElementById('loading');
 
-// API KEY (आपकी)
-const API_KEY = "g6Dcc2HgaYGCRpg5FkkpUa85";
-const API_URL = "https://api.remove.bg/v1.0/removebg";
-
 // Drag & Drop Events
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     dropArea.addEventListener(eventName, preventDefaults, false);
@@ -65,33 +61,36 @@ function processImage(file) {
 
     showLoading(true);
 
-    const formData = new FormData();
-    formData.append('image_file', file);
-    formData.append('size', 'auto');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Image = e.target.result.split(',')[1]; // Remove data URL prefix
 
-    fetch(API_URL, {
-        method: 'POST',
-        headers: {
-            'X-Api-Key': API_KEY,
-        },
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to remove background');
-        return response.blob();
-    })
-    .then(blob => {
-        const url = URL.createObjectURL(blob);
-        previewImage.src = url;
-        previewSection.style.display = 'block';
-        downloadBtn.onclick = () => downloadImage(url, file.name.replace(/\.[^/.]+$/, "") + "_no_bg.png");
-        showLoading(false);
-    })
-    .catch(err => {
-        console.error(err);
-        alert('Error processing image. Please try again.');
-        showLoading(false);
-    });
+        fetch('/.netlify/functions/remove-bg', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: base64Image })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const imageUrl = `data:image/png;base64,${data.image}`;
+                previewImage.src = imageUrl;
+                previewSection.style.display = 'block';
+                downloadBtn.onclick = () => downloadImage(imageUrl, file.name.replace(/\.[^/.]+$/, "") + "_no_bg.png");
+            } else {
+                throw new Error(data.error || 'Unknown error');
+            }
+            showLoading(false);
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error processing image. Please try again.');
+            showLoading(false);
+        });
+    };
+    reader.readAsDataURL(file);
 }
 
 function showLoading(show) {
